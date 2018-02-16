@@ -27,31 +27,36 @@
 	    }
 	}
 	
-	/**
-	* Create WooCommerce Bookings
-	*/
-	add_action('init','set_new_booking');
-	function set_new_booking() {
-	$new_booking = new WC_Booking();
-	$create_order = 'unpaid';
-	$new_booking->set_status( $create_order ? 'unpaid' : 'paid' );
-	$new_booking->set_date_created( current_time( 'timestamp' ) );
-	$new_booking->set_all_day('yes');
-	$new_booking->set_person_counts(2);
-	$new_booking->set_start('2018-2-2');
-	$new_booking->set_end('2018-2-5');
-	$new_booking->set_cost(450);
 	/*
-	$userdata = array(
-	    'user_login' =>  'abcd@gmail.com',
-	    'user_email' =>  'abcd@gmail.com',
-	    'first_name' =>  'abcd@gmail.com',
-	    'last_name' =>  'abcd@gmail.com',
-	    'role' => 'customer',
-	    'user_pass'  =>  wp_generate_password( 8, false )
-	); 
+	* AJAX Requests one after another
+	*/
+	
+	jQuery(document).ready(function(){
 
-	$user_id = wp_insert_user($userdata);
-	$new_booking->set_customer_id($user_id);*/
-	$new_booking->save();
-	}
+	var productsjson = jQuery.parseJSON(ajax_object.shop_products);
+    	current = 0;
+
+	    //declare your function to run AJAX requests
+	    function ajax_clone_bas_products() {
+		//check to make sure there are more requests to make
+		if (current < productsjson.length) {
+
+			var data = {
+				'action': 'clone_bas_products',
+				'productid': productsjson[current]
+			};
+
+			jQuery.post(ajax_object.ajax_url, data, function(response) {
+				if(response) {
+			   		console.log(response);
+					current++;
+					ajax_clone_bas_products();
+			   	}
+			});
+	        }
+    	}
+
+	    //run the AJAX function for the first time once `document.ready` fires
+    	ajax_clone_bas_products();
+
+	});
